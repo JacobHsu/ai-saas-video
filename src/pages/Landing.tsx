@@ -1,27 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { Reveal } from "@/components/Reveal";
 import { supabase } from "@/integrations/supabase/client";
+import { usePageMeta } from "@/lib/page-meta";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Video Speed Reader — Transcripts in three minutes" },
-      {
-        name: "description",
-        content:
-          "Upload your video and get an accurate, commercial-use-ready transcript in three minutes. Built for creators, educators, and engineers.",
-      },
-      { property: "og:title", content: "Video Speed Reader — Transcripts in three minutes" },
-      {
-        property: "og:description",
-        content: "Upload your video, get a clean transcript in three minutes.",
-      },
-    ],
-  }),
-  component: Landing,
-});
+const TITLE = "Video Speed Reader — Transcripts in three minutes";
 
 const features = [
   {
@@ -41,7 +25,14 @@ const features = [
   },
 ];
 
-function Landing() {
+export default function Landing() {
+  usePageMeta({
+    title: TITLE,
+    description:
+      "Upload your video and get an accurate, commercial-use-ready transcript in three minutes. Built for creators, educators, and engineers.",
+    ogTitle: TITLE,
+    ogDescription: "Upload your video, get a clean transcript in three minutes.",
+  });
   const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
@@ -66,7 +57,7 @@ function Landing() {
             </Link>
           ) : (
             <Link
-              to="/auth"
+              to="/sign-in"
               className="btn-primary rounded-full px-4 py-2 text-sm font-medium sm:px-5"
             >
               Sign in / 登入
@@ -99,7 +90,7 @@ function Landing() {
             <Reveal delay={240}>
               <div className="mt-10 flex justify-center">
                 <Link
-                  to={signedIn ? "/app" : "/auth"}
+                  to={signedIn ? "/app" : "/sign-in"}
                   className="btn-primary rounded-full px-7 py-3 text-base font-semibold"
                 >
                   {signedIn ? "Open app" : "Sign in / 登入"}
