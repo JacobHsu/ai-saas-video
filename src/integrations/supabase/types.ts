@@ -10,11 +10,86 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.18"
   }
   public: {
     Tables: {
-      [_ in never]: never
+      job_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          job_id: string
+          session_number: number
+          subtitle_txt_content: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          job_id: string
+          session_number?: number
+          subtitle_txt_content?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          job_id?: string
+          session_number?: number
+          subtitle_txt_content?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_sessions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jobs: {
+        Row: {
+          created_at: string
+          current_session_id: string | null
+          id: string
+          language: string
+          status: string
+          topic: string | null
+          updated_at: string
+          user_id: string
+          video_source_url: string
+        }
+        Insert: {
+          created_at?: string
+          current_session_id?: string | null
+          id?: string
+          language?: string
+          status?: string
+          topic?: string | null
+          updated_at?: string
+          user_id: string
+          video_source_url: string
+        }
+        Update: {
+          created_at?: string
+          current_session_id?: string | null
+          id?: string
+          language?: string
+          status?: string
+          topic?: string | null
+          updated_at?: string
+          user_id?: string
+          video_source_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_current_session"
+            columns: ["current_session_id"]
+            isOneToOne: false
+            referencedRelation: "job_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

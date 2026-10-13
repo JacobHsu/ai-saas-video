@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/client";
@@ -18,13 +19,18 @@ export default function Dashboard({ email }: { email: string }) {
       <header className="border-b border-border/60">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-5 py-4">
           <span className="text-sm font-semibold tracking-tight">Video Speed Reader</span>
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="rounded-full border border-input px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
-          >
-            Sign out
-          </button>
+          <div className="flex items-center gap-2">
+            <Link href="/upload" className="btn-primary rounded-full px-4 py-2 text-sm font-medium">
+              Upload
+            </Link>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="rounded-full border border-input px-4 py-2 text-sm font-medium transition-colors hover:bg-accent"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
       </header>
 
@@ -33,8 +39,11 @@ export default function Dashboard({ email }: { email: string }) {
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Hi {email}</h1>
           <div className="mt-8 rounded-2xl border border-border bg-card p-8">
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Your dashboard is coming soon. Upload functionality will be added in the next
-              milestone.
+              Turn a video into a transcript:{" "}
+              <Link href="/upload" className="font-medium text-primary-glow hover:underline">
+                go to Upload
+              </Link>
+              .
             </p>
           </div>
         </div>
