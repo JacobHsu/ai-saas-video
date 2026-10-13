@@ -1,17 +1,14 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
 
-import { supabase } from "@/integrations/supabase/client";
-import { usePageMeta } from "@/lib/page-meta";
+import { createClient } from "@/lib/supabase/client";
 
-export default function AuthPage({ mode }: { mode: "signin" | "signup" }) {
-  usePageMeta({
-    title: "Sign in — Video Speed Reader",
-    description: "Sign in or create an account to turn your videos into transcripts.",
-    ogTitle: "Sign in — Video Speed Reader",
-    ogDescription: "Sign in or create an account to turn your videos into transcripts.",
-  });
-  const navigate = useNavigate();
+export default function AuthForm({ mode }: { mode: "signin" | "signup" }) {
+  const router = useRouter();
+  const [supabase] = useState(createClient);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -25,9 +22,9 @@ export default function AuthPage({ mode }: { mode: "signin" | "signup" }) {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate("/app", { replace: true });
+      if (data.session) router.replace("/app");
     });
-  }, [navigate]);
+  }, [router, supabase]);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -44,19 +41,21 @@ export default function AuthPage({ mode }: { mode: "signin" | "signup" }) {
       setLoading(false);
       if (signUpError) return setError(signUpError.message);
       if (!data.session) return setNotice("Check your email to confirm your account.");
-      navigate("/app", { replace: true });
+      router.replace("/app");
+      router.refresh();
       return;
     }
 
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (signInError) return setError(signInError.message);
-    navigate("/app", { replace: true });
+    router.replace("/app");
+    router.refresh();
   }
 
   return (
     <div className="hero-glow flex min-h-screen flex-col items-center justify-center bg-background px-5 py-16">
-      <Link to="/" className="text-sm font-semibold tracking-tight">
+      <Link href="/" className="text-sm font-semibold tracking-tight">
         Video Speed Reader
       </Link>
 
@@ -116,7 +115,7 @@ export default function AuthPage({ mode }: { mode: "signin" | "signup" }) {
         <button
           type="button"
           onClick={() => {
-            navigate(mode === "signin" ? "/sign-up" : "/sign-in");
+            router.push(mode === "signin" ? "/sign-up" : "/sign-in");
           }}
           className="mt-6 w-full text-sm text-muted-foreground transition-colors hover:text-foreground"
         >

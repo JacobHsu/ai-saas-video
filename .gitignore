@@ -11,6 +11,16 @@ node_modules
 dist
 *.local
 
+# Next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+.vercel
+
+# Worker virtualenv (created on the EC2)
+worker/venv/
+
 
 # Editor directories and files
 .vscode/*

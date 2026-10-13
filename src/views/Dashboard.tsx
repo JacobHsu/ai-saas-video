@@ -1,27 +1,16 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+"use client";
 
-import { useAuthUser } from "@/components/RequireAuth";
-import { supabase } from "@/integrations/supabase/client";
-import { usePageMeta } from "@/lib/page-meta";
+import { useRouter } from "next/navigation";
 
-export default function AppShell() {
-  usePageMeta({
-    title: "Dashboard — Video Speed Reader",
-    description: "Your Video Speed Reader dashboard.",
-    ogTitle: "Dashboard — Video Speed Reader",
-    ogDescription: "Your Video Speed Reader dashboard.",
-    robots: "noindex",
-  });
-  const user = useAuthUser();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+import { createClient } from "@/lib/supabase/client";
+
+export default function Dashboard({ email }: { email: string }) {
+  const router = useRouter();
 
   async function handleSignOut() {
-    await queryClient.cancelQueries();
-    queryClient.clear();
-    await supabase.auth.signOut();
-    navigate("/sign-in", { replace: true });
+    await createClient().auth.signOut();
+    router.replace("/sign-in");
+    router.refresh();
   }
 
   return (
@@ -41,7 +30,7 @@ export default function AppShell() {
 
       <main className="hero-glow">
         <div className="mx-auto max-w-5xl px-5 py-24">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Hi {user.email}</h1>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Hi {email}</h1>
           <div className="mt-8 rounded-2xl border border-border bg-card p-8">
             <p className="text-sm leading-relaxed text-muted-foreground">
               Your dashboard is coming soon. Upload functionality will be added in the next
