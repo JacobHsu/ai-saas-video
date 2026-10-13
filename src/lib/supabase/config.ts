@@ -1,3 +1,21 @@
+// New-style Supabase keys (sb_publishable_*, sb_secret_*) are opaque strings, not JWTs, so they
+// must not be sent as a bearer token; the `apikey` header carries them instead.
+export function apiKeyFetch(apiKey: string): typeof fetch {
+  return (input, init) => {
+    const headers = new Headers(
+      typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
+    );
+    if (init?.headers) {
+      new Headers(init.headers).forEach((value, key) => headers.set(key, value));
+    }
+    if (headers.get("Authorization") === `Bearer ${apiKey}`) {
+      headers.delete("Authorization");
+    }
+    headers.set("apikey", apiKey);
+    return fetch(input, { ...init, headers });
+  };
+}
+
 // Shared by the browser client, the server client, and middleware.
 // NEXT_PUBLIC_* values are inlined at build time, so they must be referenced literally.
 export function supabaseConfig() {
@@ -14,21 +32,5 @@ export function supabaseConfig() {
     );
   }
 
-  // Publishable keys (sb_publishable_*) are opaque strings, not JWTs, so they must not be sent
-  // as a bearer token; the `apikey` header carries them instead.
-  const fetchWithApiKey: typeof fetch = (input, init) => {
-    const headers = new Headers(
-      typeof Request !== "undefined" && input instanceof Request ? input.headers : undefined,
-    );
-    if (init?.headers) {
-      new Headers(init.headers).forEach((value, key) => headers.set(key, value));
-    }
-    if (headers.get("Authorization") === `Bearer ${publishableKey}`) {
-      headers.delete("Authorization");
-    }
-    headers.set("apikey", publishableKey);
-    return fetch(input, { ...init, headers });
-  };
-
-  return { url, publishableKey, fetch: fetchWithApiKey };
+  return { url, publishableKey, fetch: apiKeyFetch(publishableKey) };
 }
